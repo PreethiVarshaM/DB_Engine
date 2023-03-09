@@ -23,6 +23,7 @@ public class cs20b030_parser {
 
                 // creating the new table
                 Table table = new Table(tableName, n);
+
                 cs20b030_dbengine.tables.add(table);
 
                 for (int i = 1; i <= n; i++) {
@@ -51,6 +52,10 @@ public class cs20b030_parser {
                 String tableName = parts[2];
                 String dataRow = parts[3].substring(1, parts[3].length() - 1);
                 intermediateCode.add("insert_into " + tableName + " (" + dataRow + ")");
+            } else if (line.startsWith("select * from")) {
+                String[] parts = line.split(" ");
+                String tableName = parts[3];
+                intermediateCode.add("select_star " + tableName);
             }
             lineNum++;
         }

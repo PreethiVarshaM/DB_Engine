@@ -17,6 +17,7 @@ class Table implements Serializable {
     }
 
     public void addAttribute(String type, String name) {
+
         this.types.add(type);
         this.names.add(name);
     }
@@ -75,10 +76,30 @@ public class cs20b030_dbengine {
         return -1;
     }
 
-    static void create_table(String tableName) {
+    static void store_table(String tableName) throws IOException {
+        int index = getTableIndex(tableName);
+        Table table = tables.get(index);
+        FileOutputStream file = new FileOutputStream(tableName + ".ser");
+        ObjectOutputStream out = new ObjectOutputStream(file);
+        out.writeObject(table);
+        out.close();
+        file.close();
+    }
+
+    static Table load_table(String tableName) throws IOException, ClassNotFoundException {
+        FileInputStream file = new FileInputStream(tableName + ".ser");
+        ObjectInputStream in = new ObjectInputStream(file);
+        Table table = (Table) in.readObject();
+        in.close();
+        file.close();
+        return table;
+    }
+
+    static void create_table(String tableName) throws IOException {
 
         for (Table table : tables) {
             if (table.name.equals(tableName)) {
+                store_table(tableName);
                 return;
             }
         }
@@ -87,7 +108,9 @@ public class cs20b030_dbengine {
         tables.add(table);
     }
 
-    static void add_attribute(String tableName, String attrType, String attrName) {
+    static void add_attribute(String tableName, String attrType, String attrName)
+            throws IOException {
+
         tables.get(getTableIndex(tableName)).addAttribute(attrType, attrName);
 
     }
@@ -96,7 +119,12 @@ public class cs20b030_dbengine {
         tables.get(index).insertInto(values);
     }
 
-    static void execute_intermediate_code() throws IOException {
+    static void select_star(String tableName) throws IOException, ClassNotFoundException {
+        Table table = load_table(tableName);
+        table.print();
+    }
+
+    static void execute_intermediate_code() throws IOException, ClassNotFoundException {
 
         BufferedReader br = new BufferedReader(new FileReader("cs20b030.code"));
 
@@ -113,11 +141,15 @@ public class cs20b030_dbengine {
                 String attrType = parts[2];
                 String attrName = parts[3];
                 add_attribute(tableName, attrType, attrName);
+                store_table(tableName);
 
             } else if (parts[0].equals("insert_into")) {
                 int index = getTableIndex(parts[1]);
 
                 insert_into(index, parts[2].substring(1, parts[2].length() - 1));
+                store_table(parts[1]);
+            } else if (parts[0].equals("select_star")) {
+                select_star(parts[1]);
             }
 
         }
@@ -125,7 +157,7 @@ public class cs20b030_dbengine {
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         BufferedReader br = new BufferedReader(new FileReader("cs20b030.query"));
         String code = "";
         String line;
@@ -140,10 +172,6 @@ public class cs20b030_dbengine {
 
         // To execute intermediate code
         execute_intermediate_code();
-
-        for (Table table : tables) {
-            table.print();
-        }
 
     }
 }

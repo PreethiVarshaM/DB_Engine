@@ -312,3 +312,6 @@ insert into cs20b030_table2 (7103,8803,EX2rpBshEA,AVIC3Y8uQd,2004-06-04,1905-01-
 insert into cs20b030_table2 (8963,2309,Hne3a6KEzw,ZIwqCpcpCb,1914-01-19,1953-02-26)
 insert into cs20b030_table2 (7721,2543,4wM09PkesC,22lnmtB8Gi,1912-05-22,1936-05-08)
 insert into cs20b030_table2 (5220,1336,rN1QPcRE3R,jdTFBx3B9O,1909-01-03,1913-07-28)
+
+select * from cs20b030_table1
+select * from cs20b030_table2
