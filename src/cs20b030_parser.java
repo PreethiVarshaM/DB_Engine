@@ -20,6 +20,11 @@ public class cs20b030_parser {
                 intermediateCode.add("create_table " + tableName);
                 currentTable = tableName;
                 int n = Integer.parseInt(line.split(" ")[3]);
+
+                // creating the new table
+                Table table = new Table(tableName, n);
+                cs20b030_dbengine.tables.add(table);
+
                 for (int i = 1; i <= n; i++) {
                     line = lines[lineNum + i].trim();
                     if (line.startsWith("int")) {
@@ -56,6 +61,7 @@ public class cs20b030_parser {
             buffer.newLine();
         }
         buffer.close();
+
         return intermediateCode;
     }
 
