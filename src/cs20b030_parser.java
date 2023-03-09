@@ -37,7 +37,7 @@ public class cs20b030_parser {
                         String attrType = parts[0];
                         String attrName = parts[1];
                         intermediateCode.add("add_attribute " + currentTable + " " + attrType + " " + attrName);
-                    } else if (line.startsWith("float")) {
+                    } else if (line.startsWith("date")) {
                         String[] parts = line.split(" ");
                         String attrType = parts[0];
                         String attrName = parts[1];

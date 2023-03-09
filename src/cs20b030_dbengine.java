@@ -31,12 +31,16 @@ class Table implements Serializable {
     }
 
     public void print() throws IOException {
-        System.out.println("Table: " + this.name);
-        System.out.println("Number of attributes: " + this.numAttributes);
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.println("\nTable: " + this.name);
+        System.out.println("Number of attributes: " + this.numAttributes + "\n");
         for (int i = 0; i < this.numAttributes; i++) {
             System.out.print(this.types.get(i) + "\t");
+            if (this.types.get(i).equals("string") || this.types.get(i).equals("date")) {
+                System.out.print("\t");
+            }
         }
-        System.out.println();
+        System.out.println("\n");
 
         FileWriter writer = new FileWriter(this.name + ".table");
         BufferedWriter buffer = new BufferedWriter(writer);
@@ -50,6 +54,7 @@ class Table implements Serializable {
             buffer.newLine();
         }
         buffer.close();
+        System.out.println("--------------------------------------------------------------------------");
     }
 
     int getNumAttributes() {

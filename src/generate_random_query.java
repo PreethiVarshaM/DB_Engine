@@ -13,7 +13,7 @@ public class generate_random_query {
         Random rand2 = new Random();
 
         String code = "";
-        int n = 100;
+        int n = 200;
         for (int i = 0; i < n; i++) {
             int year = rand2.nextInt(123) + 1900;
 
