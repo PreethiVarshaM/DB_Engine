@@ -1,6 +1,7 @@
 import java.util.*;
 import java.io.*;
 
+// class to represent a table
 class Table implements Serializable {
     String name;
     int numAttributes;
@@ -8,6 +9,7 @@ class Table implements Serializable {
     List<String> names;
     List<List<String>> data;
 
+    // constructor
     public Table(String name, int numAttributes) {
         this.name = name;
         this.numAttributes = numAttributes;
@@ -16,12 +18,14 @@ class Table implements Serializable {
         this.types = new ArrayList<String>();
     }
 
+    // method to add an attribute to the table
     public void addAttribute(String type, String name) {
 
         this.types.add(type);
         this.names.add(name);
     }
 
+    // method to insert a row into the table
     public void insertInto(String dataRow) {
         String[] row = dataRow.split(",");
         for (int i = 0; i < row.length; i++) {
@@ -31,6 +35,7 @@ class Table implements Serializable {
         this.data.add(rowList);
     }
 
+    // method to print the table
     public void print() throws IOException {
         System.out.println("--------------------------------------------------------------------------");
         System.out.println("\nTable: " + this.name);
@@ -58,15 +63,20 @@ class Table implements Serializable {
         System.out.println("--------------------------------------------------------------------------");
     }
 
+    // method to get the index of an attribute
     int getNumAttributes() {
         return this.numAttributes;
     }
+
 }
 
+// class to represent a database
 public class cs20b030_dbengine {
 
+    // list of tables in the database
     public static List<Table> tables = new ArrayList<>();
 
+    // method to get the index of a table in the database
     static int getTableIndex(String tableName) {
         for (int i = 0; i < tables.size(); i++) {
             if (tables.get(i).name.equals(tableName)) {
@@ -76,30 +86,50 @@ public class cs20b030_dbengine {
         return -1;
     }
 
-    static void store_table(String tableName) throws IOException {
-        int index = getTableIndex(tableName);
-        Table table = tables.get(index);
-        FileOutputStream file = new FileOutputStream(tableName + ".ser");
-        ObjectOutputStream out = new ObjectOutputStream(file);
-        out.writeObject(table);
-        out.close();
-        file.close();
+    // method to store a table in the database as csv file
+    static void save_table(String tableName) throws IOException {
+        try (FileWriter writer = new FileWriter(tableName + ".csv");
+                BufferedWriter buffer = new BufferedWriter(writer)) {
+            Table table = tables.get(getTableIndex(tableName));
+            for (List<String> row : table.data) {
+                for (int i = 0; i < row.size(); i++) {
+                    writer.append(row.get(i));
+                    if (i != row.size() - 1) {
+                        writer.append(",");
+                    }
+                }
+                writer.append("\n");
+            }
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+    // method to load a table from the database
     static Table load_table(String tableName) throws IOException, ClassNotFoundException {
-        FileInputStream file = new FileInputStream(tableName + ".ser");
-        ObjectInputStream in = new ObjectInputStream(file);
-        Table table = (Table) in.readObject();
-        in.close();
-        file.close();
-        return table;
+        List<List<String>> data = new ArrayList<>();
+        BufferedReader br = new BufferedReader(new FileReader(tableName + ".csv"));
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] values = line.split(",");
+            List<String> row = new ArrayList<>();
+            for (String value : values) {
+                row.add(value);
+            }
+            data.add(row);
+        }
+        br.close();
+        tables.get(getTableIndex(tableName)).data = data;
+        return tables.get(getTableIndex(tableName));
     }
 
+    // method to create a table
     static void create_table(String tableName) throws IOException {
 
         for (Table table : tables) {
             if (table.name.equals(tableName)) {
-                store_table(tableName);
+                save_table(tableName);
                 return;
             }
         }
@@ -108,6 +138,7 @@ public class cs20b030_dbengine {
         tables.add(table);
     }
 
+    // method to add an attribute to a table
     static void add_attribute(String tableName, String attrType, String attrName)
             throws IOException {
 
@@ -115,15 +146,19 @@ public class cs20b030_dbengine {
 
     }
 
+    // method to insert a row into a table
     static void insert_into(int index, String values) {
         tables.get(index).insertInto(values);
     }
 
+    // method to select all attributes from a table
     static void select_star(String tableName) throws IOException, ClassNotFoundException {
         Table table = load_table(tableName);
         table.print();
     }
 
+    // method to parse and execute intermediate-code through the respective
+    // function-calls
     static void execute_intermediate_code() throws IOException, ClassNotFoundException {
 
         BufferedReader br = new BufferedReader(new FileReader("cs20b030.code"));
@@ -141,13 +176,13 @@ public class cs20b030_dbengine {
                 String attrType = parts[2];
                 String attrName = parts[3];
                 add_attribute(tableName, attrType, attrName);
-                store_table(tableName);
+                save_table(tableName);
 
             } else if (parts[0].equals("insert_into")) {
                 int index = getTableIndex(parts[1]);
 
                 insert_into(index, parts[2].substring(1, parts[2].length() - 1));
-                store_table(parts[1]);
+                save_table(parts[1]);
             } else if (parts[0].equals("select_star")) {
                 select_star(parts[1]);
             }
@@ -157,7 +192,10 @@ public class cs20b030_dbengine {
 
     }
 
+    // main method
     public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+        // To read query from file
         BufferedReader br = new BufferedReader(new FileReader("cs20b030.query"));
         String code = "";
         String line;

@@ -8,13 +8,21 @@ import java.io.BufferedWriter;
 public class cs20b030_parser {
 
     public static List<String> parse(String code) throws IOException {
+
+        // List of intermediate code
         List<String> intermediateCode = new ArrayList<>();
         String[] lines = code.split("\\r?\\n");
         String currentTable = "";
         int lineNum = 0;
+
+        // parsing the code
         for (String line : lines) {
 
             line = line.trim();
+
+            // condition to check if prefix is to create a table or insert into a table or
+            // select from a table or add attribute
+
             if (line.startsWith("create table")) {
                 String tableName = line.split(" ")[2];
                 intermediateCode.add("create_table " + tableName);
@@ -59,6 +67,8 @@ public class cs20b030_parser {
             }
             lineNum++;
         }
+
+        // writing the intermediate code to a file
         FileWriter writer = new FileWriter("cs20b030.code");
         BufferedWriter buffer = new BufferedWriter(writer);
         for (String line : intermediateCode) {
