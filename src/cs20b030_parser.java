@@ -1,47 +1,13 @@
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-class Table {
-    String name;
-    int numAttributes;
-    List<String> types;
-    List<List<String>> data;
-
-    public Table(String name, int numAttributes) {
-        this.name = name;
-        this.numAttributes = numAttributes;
-        this.data = new ArrayList<>();
-        this.types = new ArrayList<String>();
-    }
-
-    public void addAttribute(List<String> attr) {
-        for (int i = 0; i < numAttributes; i++) {
-            this.types.add(attr.get(i));
-        }
-    }
-
-    public void insertInto(String dataRow) {
-        String[] row = dataRow.split(",");
-        for (int i = 0; i < row.length; i++) {
-            row[i] = row[i].trim();
-
-        }
-    }
-
-    public void print() {
-        System.out.println("Table: " + this.name);
-        System.out.println("Number of attributes: " + this.numAttributes);
-        for (Attribute attribute : this.attributes) {
-            attribute.print();
-        }
-    }
-}
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.BufferedWriter;
 
 public class cs20b030_parser {
 
-    public static List<String> parse(String code) {
+    public static List<String> parse(String code) throws IOException {
         List<String> intermediateCode = new ArrayList<>();
         String[] lines = code.split("\\r?\\n");
         String currentTable = "";
@@ -83,7 +49,13 @@ public class cs20b030_parser {
             }
             lineNum++;
         }
-
+        FileWriter writer = new FileWriter("cs20b030.code");
+        BufferedWriter buffer = new BufferedWriter(writer);
+        for (String line : intermediateCode) {
+            buffer.write(line);
+            buffer.newLine();
+        }
+        buffer.close();
         return intermediateCode;
     }
 

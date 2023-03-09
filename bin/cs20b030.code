@@ -1,0 +1,13 @@
+create_table mytab
+add_attribute mytab int a
+add_attribute mytab string b
+create_table mytab2
+add_attribute mytab2 int a
+add_attribute mytab2 string b
+add_attribute mytab2 string c
+create_table mytab3
+add_attribute mytab3 int a1
+add_attribute mytab3 string b1
+add_attribute mytab3 string c1
+add_attribute mytab3 int d1
+insert_into mytab (12,23.4)
